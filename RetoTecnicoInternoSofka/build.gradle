@@ -1,0 +1,61 @@
+
+defaultTasks 'clean','test'
+
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:3.3.10")
+        classpath ("net.serenity-bdd:serenity-single-page-report:3.2.1")
+    }
+}
+
+apply plugin: 'java'
+//apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin : "net.serenity-bdd.serenity-gradle-plugin"
+
+group 'org.proyect.plataforma.bienestar'
+version '1.0'
+
+ext{
+    serenityVersion = '3.3.10'
+    cucumberVersion = '7.8.1'
+}
+
+tasks.withType(JavaCompile){
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    implementation "net.serenity-bdd:serenity-screenplay-rest:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-junit:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-core:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-rest-assured:$rootProject.ext.serenityVersion"
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+    implementation group: 'junit', name: 'junit', version: '4.13.1'
+    implementation group: 'io.rest-assured', name: 'json-schema-validator', version: '4.3.3'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.0-rc1'
+    implementation group: 'com.codoid.products', name: 'fillo', version: '1.18'
+    implementation "io.cucumber:cucumber-java:$rootProject.ext.cucumberVersion"
+    implementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: '3.2.1'
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-cucumber', version: '3.3.10'
+}
+
+test {
+    useJUnit()
+    systemProperty "file.encoding", "utf-8"
+}
+
+serenity {
+    reports = ["single-page-html"]
+}
+
+test.finalizedBy(aggregate)
